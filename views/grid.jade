@@ -54,6 +54,11 @@ body
             
         button.btn.btn-default(type="submit",onclick="addAnnotation()") Annotate
         
+      form.navbar-form.navbar-left(onsubmit="return nothingHappens()")
+        div.form-group
+          label.label.label-inverse(for="hidethings") Hide annotations
+          input#hidethings.form-control(type="checkbox",onchange="hideThings()")
+        
       form.navbar-form.navbar-right(onsubmit="return nothingHappens()")
         div.form-group
           label.sr-only(for="addbox")

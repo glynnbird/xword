@@ -29,6 +29,17 @@ var formatDate = function(ts) {
   return then.format("MMM D, HH:mm");
 }
 
+var hideThings = function() {
+  var checked = $('#hidethings').prop('checked');
+  if(checked) {
+    $('#annotations').hide();
+    $('#chatthing').hide();
+  } else {
+    $('#annotations').show();
+    $('#chatthing').show();
+  }
+}
+
 var recalibrateGrid = function() {
   S = $('#sslider').slider("value");
   H = $('#hslider').slider("value");
@@ -49,33 +60,26 @@ var dismissCalibrate = function() {
   $('#chatthing').height(h);
 }
 
-var calculateSeq = function(callback) {
-  db.info(function(err,data) {
-    callback(null, data.update_seq);
-  })  
-};
 
 var addComment = function() {
   if($('#addbox').val().length > 0 ) {
-    calculateSeq(function(err, seq) {
-      var obj = {
-        type: "chat",
-        ts: moment().unix(),
-        seq: seq,
-        person: user.displayName,
-        img: user.photos[0].value,
-        message: $('#addbox').val()
-      };
-      console.log("OBJECT TO ADD",obj)
-      var html = $('#chat').html();;
-      html += render(obj);
-      $('#chat').html(html);
-      $('#chatthing').scrollTop(1E10);
-      $('#addbox').val('');
-      db.post(obj, function(err, data) {
-        console.log("post", err, data,obj);
-      });
+    var obj = {
+      type: "chat",
+      ts: moment().unix(),
+      person: user.displayName,
+      img: user.photos[0].value,
+      message: $('#addbox').val()
+    };
+    console.log("OBJECT TO ADD",obj)
+    var html = $('#chat').html();;
+    html += render(obj);
+    $('#chat').html(html);
+    $('#chatthing').scrollTop(1E10);
+    $('#addbox').val('');
+    db.post(obj, function(err, data) {
+      console.log("post", err, data,obj);
     });
+
   }
 }
 
@@ -84,32 +88,28 @@ var addAnnotation = function() {
     txt = $('#annotationtxt').val()
   
   if(txt.length > 0) {
-    calculateSeq(function(err, seq) {
-          
-      var obj = {
-        type: "annotation",
-        ts: moment().unix(),
-        seq: seq,
-        person: user.displayName,
-        img: user.photos[0].value,
-        message: txt,
-        direction: direction,
-        top: 50,
-        left: 50
-      };
-      var html = $('#chat').html();;
-      html += render(obj);
-      $('#chat').html(html);
-      $('#chatthing').scrollTop(1E10);
-      $('#annotationtxt').val('')
-      db.post(obj, function(err, data) {
-        console.log("post", err, data,obj);
-        obj._id = data.id;
-        obj._rev = data.rev;
-        var h = renderAnnotation(obj);
-        var html = $('#annotations').html();
-        $('#annotations').html(html + h);
-      });
+    var obj = {
+      type: "annotation",
+      ts: moment().unix(),
+      person: user.displayName,
+      img: user.photos[0].value,
+      message: txt,
+      direction: direction,
+      top: 50,
+      left: 50
+    };
+    var html = $('#chat').html();;
+    html += render(obj);
+    $('#chat').html(html);
+    $('#chatthing').scrollTop(1E10);
+    $('#annotationtxt').val('')
+    db.post(obj, function(err, data) {
+      console.log("post", err, data,obj);
+      obj._id = data.id;
+      obj._rev = data.rev;
+      var h = renderAnnotation(obj);
+      var html = $('#annotations').html();
+      $('#annotations').html(html + h);
     });
   }
 
@@ -155,7 +155,7 @@ var renderAnnotation = function(doc) {
 }
 var map1 = function(doc) {
   if(doc.type && doc.ts) {
-    emit([doc.seq,doc.ts], null);
+    emit(doc.ts, null);
   }
 }
 
