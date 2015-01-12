@@ -1,0 +1,113 @@
+body {
+  margin-top:53px;
+}
+
+.container-non-responsive {
+  /* Margin/padding copied from Bootstrap */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+
+  /* Set width to your desired site width */
+  width: 1450px;
+}
+
+#target {
+  max-width:100%;
+}
+
+.slide {
+  width:430px;
+}
+#sslider {
+  width:400px;
+}
+#hslider {
+  width:400px;
+}
+#vslider {
+  width:400px;
+}
+
+.chat
+{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.chat li
+{
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px dotted #B3A9A9;
+}
+.img-circle {
+  max-width:40px;
+  max-height:40px;
+}
+.chat li.left .chat-body
+{
+    margin-left: 60px;
+}
+
+.chat li.right .chat-body
+{
+    margin-right: 60px;
+}
+
+
+.chat li .chat-body p
+{
+    margin: 0;
+    color: #777777;
+}
+
+.panel .slidedown .glyphicon, .chat .glyphicon
+{
+    margin-right: 5px;
+}
+
+.panel-body
+{
+    overflow-y: scroll;
+    height: 250px;
+}
+
+::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar
+{
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    background-color: #555;
+}
+
+#annotations {
+}
+.annotation {
+  cursor: pointer;
+  background-color: rgba(255,255,255, 0.7);
+  position:absolute;
+  font-family: "Courier New", Courier, monospace;
+  font-size:22px;
+  color:blue;
+  text-weight:bold;
+  letter-spacing:0.45em;
+  text-align:center;
+}
+.vertical {
+  width: 1em;
+  line-height:1em;
+/*  letter-spacing: 40px; */ /* arbitrarily large letter-spacing for safety */
+}

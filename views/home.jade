@@ -1,0 +1,34 @@
+doctype html
+html(lang="en")
+head
+  include head.jade
+  link(rel="stylesheet",href="/css/xword.css")
+
+body
+
+
+  div.container
+    div.header
+      h3.text-muted
+      
+    div.jumbotron
+      h1 Xword
+      p.lead Collaborate with friends to solve cryptic crosswords 
+      p 
+      if user
+        p Logged in as #{user.username}
+        p 
+          a(href="/addform") Add a new grid
+        p or visit one of your our old grids
+      else
+        a.btn.btn-default(href="/auth/twitter") Login
+    
+    if recents    
+      ul
+        - var done = []
+        each r in recents
+          
+          if done.indexOf(r.grid_id) === -1
+            li 
+              a(href="/grid/#{r.grid_id}") #{r.name}  
+            - done.push(r.grid_id)

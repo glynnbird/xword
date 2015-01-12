@@ -1,0 +1,21 @@
+{
+  "name": "xword",
+  "version": "0.0.1",
+  "description": "Collaborative Crossword Solver",
+  "dependencies": {
+    "body-parser": "^1.9.3",
+    "cloudant": "^1.0.0-beta3",
+    "connect-redis": "^2.1.0",
+    "express": "4.8.5",
+    "express-session": "^1.10.1",
+    "jade": "1.1.4",
+    "knox": "^0.9.2",
+    "moment": "^2.8.4",
+    "multer": "^0.1.6",
+    "passport": "^0.2.1",
+    "passport-twitter": "^1.0.2"
+  },
+  "engines": {
+    "node": "0.10.26"
+  }
+}

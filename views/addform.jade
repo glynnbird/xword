@@ -1,0 +1,26 @@
+doctype html
+html(lang="en")
+head
+  include head.jade
+  link(rel="stylesheet",href="/css/xword.css")
+
+body
+
+
+  div.container
+    div.header
+      h3.text-muted
+      
+    div.jumbotron
+      h1 Xword - Add Form
+      p.lead Create a new grid by uploading a scan of a newspaper crossword
+      
+      form(action="/add",enctype="multipart/form-data",method="post",onsubmit="$('#submitbutton').disable(); return true")
+        div.form-group
+          label(for="name") Name
+          input#name.form-control(type="text",name="name",placeholder="e.g. Indy 1423")
+        div.form-group
+          label(for="image") Image
+          input#image.form-control(type="file",name="image",accept="image/*")
+        button#submitbutton.btn.btn-default(type="submit") Submit
+

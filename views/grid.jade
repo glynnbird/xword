@@ -1,0 +1,61 @@
+doctype html
+html(lang="en")
+head
+  include head.jade
+  link(rel="stylesheet",href="/css/xword.css")
+  link(rel="stylesheet", href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css")
+  script(src="/js/pouchdb-3.2.1.min.js",type="text/javascript")
+  script(src="/js/grid.js",type="text/javascript")
+  
+body
+
+  nav.navbar.navbar-inverse.navbar-fixed-top(role="navigation")
+    div.container
+      div.navbar-header.hidden-xs.hidden-sm
+        a.navbar-brand(href="/") Xword
+      p#title.navbar-text #{grid.name}
+
+                  
+  div.container-non-responsive
+    div.row
+      div.col-md-8
+        div#annotations
+        
+        img.xword#target(src="#{grid.img}")
+
+      div.col-md-4
+      
+        if user.username == grid.creator
+          div.calibration.alert.alert-info.alert-dismissible
+            button.close(type="button", onclick="dismissCalibrate()",data-dismiss="alert",aria-label="Close")
+              span(aria-hidden="true") &times;
+            div.slide Text size
+             div#sslider
+            div.slide Horizontal spacing
+              div#hslider 
+            div.slide Vertical spacing
+              div#vslider
+          
+        div#chatthing.panel-body.alert.alert-warning
+          ul#chat.chat
+       
+      
+      
+      
+  nav.navbar.navbar-inverse.navbar-fixed-bottom
+    div.container
+      form.navbar-form.navbar-left(onsubmit="return nothingHappens()")
+        div.form-group
+          input#annotationtxt.form-control(type="text",placeholder="Enter solution here")
+        div.form-group
+          select#annotationdirection.form-control
+            option(value="across") Across
+            option(value="down") Down
+            
+        button.btn.btn-default(type="submit",onclick="addAnnotation()") Annotate
+        
+      form.navbar-form.navbar-right(onsubmit="return nothingHappens()")
+        div.form-group
+          label.sr-only(for="addbox")
+          input#addbox.form-control(type='string',placeholder="Enter new comment here") 
+        button.btn.btn-default(type='button',onclick='addComment()') Add
