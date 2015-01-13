@@ -5,23 +5,24 @@ head
   link(rel="stylesheet",href="/css/xword.css")
 
 body
-
+  include nav.jade
 
   div.container
     div.header
       h3.text-muted
       
     div.jumbotron
+      img.pull-right.img-responsive(src="/img/grid.png")
       h1 Xword
       p.lead Collaborate with friends to solve cryptic crosswords 
-      p 
-      if user
-        p Logged in as #{user.username}
-        p 
-          a(href="/addform") Add a new grid
-        p or visit one of your our old grids
-      else
+      ul
+        li real-time chat
+        li annotate the crossword grid collaboratively
+      p.clearfix 
+      if !user
         a.btn.btn-default(href="/auth/twitter") Login
+      else
+        a.btn.btn-default(href="/addform") Add New Grid
     
     if recents    
       ul
@@ -32,3 +33,17 @@ body
             li 
               a(href="/grid/#{r.grid_id}") #{r.name}  
             - done.push(r.grid_id)
+    else
+      div.row
+        div.col-lg-3
+          h2 Sign-in
+          p Log in with your Twitter account
+        div.col-lg-3
+          h2 Scan
+          p Scan a crossword and upload it
+        div.col-lg-3
+          h2 Share
+          p Share the URL with your friends
+        div.col-lg-3
+          h2 Solve
+          p Chat and annotate the crossword together.

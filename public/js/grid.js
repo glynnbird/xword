@@ -124,6 +124,11 @@ var render = function(doc) {
   html +=  '<span class="glyphicon glyphicon-time"></span>' + formatDate(doc.ts) + '</small>';
   html +=  '</div><p>' 
   if(doc.type=='annotation') {
+    var str = doc.message;
+    var m = str.match(/-/g);
+    if( m &&  m.length == str.length) {
+      return "";
+    }
     html += doc.message.toUpperCase()
   } else {
     html += doc.message;
@@ -141,8 +146,13 @@ var renderAnnotation = function(doc) {
   
   html += '<div id="' + doc._id + '" class="annotation '+c+'" style="top:' + doc.top + 'px; left:'+doc.left+'px; ';
   html += 'font-size:' + S + 'px;'
-  var word = doc.message.toLowerCase().replace(/\W/g,"");
-  console.log("WORD",word)
+  var str = doc.message.toLowerCase();
+  var m = str.match(/-/g);
+  if( m &&  m.length == str.length) {
+    var word = str
+  } else {
+    var word = str.replace(/\W/g,"");
+  }
   if(doc.direction=="down") {
     html += 'line-height:' + V + 'px">'
     html += word.split('').join(' ')
@@ -172,7 +182,7 @@ var drawChat = function() {
     S = grid.S;
     H = grid.H;
 
-    db.query(map1, { include_docs: true, limit:40, descending:true}, function(err, data) {
+    db.query(map1, { include_docs: true, limit:100, descending:true}, function(err, data) {
       if(err) {
         console.log("err",err);
         return;

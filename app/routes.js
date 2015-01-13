@@ -154,7 +154,7 @@ module.exports = function(app, passport) {
 
   app.get("/addform", function(req, res) {
     if(req.user) {
-      res.render('addform', {});
+      res.render('addform', {user:req.user});
     } else {
       res.redirect("/");
     }
@@ -205,7 +205,10 @@ module.exports = function(app, passport) {
     res.send({ ok: true});
   });
   
-
+  app.get("/logout", function(req, res) {
+    req.logout();
+    res.redirect("/");
+  });
   
   // Passport routes
   app.get('/auth/twitter', passport.authenticate('twitter'));
