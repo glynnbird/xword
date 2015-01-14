@@ -116,3 +116,12 @@ body {
   font-size: 40px;
   margin-left:20px;
 }
+
+.btnicon {
+  margin-right:5px;
+}
+
+.emoticon {
+  width: 25px;
+  height: 25px;
+}

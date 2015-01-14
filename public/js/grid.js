@@ -131,6 +131,8 @@ var render = function(doc) {
     }
     html += doc.message.toUpperCase()
   } else {
+    doc.message = doc.message.replace(/\(dance\)/g, "<img src=\"/img/dancing.png\" class=\"emoticon\" />");
+    doc.message = doc.message.replace(/\(ninja\)/g, "<img src=\"/img/ninja.png\" class=\"emoticon\" />");
     html += doc.message;
   }
   html += '</p></div></li>';
