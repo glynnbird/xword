@@ -3,7 +3,7 @@ html(lang="en")
 head
   include head.jade
   link(rel="stylesheet",href="/css/xword.css")
-
+  link(rel="stylesheet",href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css")
 body
   include nav.jade
 
@@ -37,13 +37,24 @@ body
       div.row
         div.col-lg-3
           h2 Sign-in
+            span.symbol
+              i.fa.fa-twitter
           p Log in with your Twitter account
+            
         div.col-lg-3
           h2 Scan
+            span.symbol
+              i.fa.fa-file-image-o
           p Scan a crossword and upload it
+          
         div.col-lg-3
           h2 Share
+            span.symbol
+              i.fa.fa-share-alt
           p Share the URL with your friends
+          
         div.col-lg-3
           h2 Solve
-          p Chat and annotate the crossword together.
+            span.symbol
+              i.fa.fa-pencil-square-o
+          p Chat and solve the crossword together.

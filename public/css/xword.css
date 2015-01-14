@@ -111,3 +111,8 @@ body {
   line-height:1em;
 /*  letter-spacing: 40px; */ /* arbitrarily large letter-spacing for safety */
 }
+
+.symbol {
+  font-size: 40px;
+  margin-left:20px;
+}
