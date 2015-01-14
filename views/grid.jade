@@ -61,9 +61,9 @@ body
         
       form.navbar-form.navbar-right(onsubmit="return nothingHappens()")
         button.btn.btnicon.btn-default(type='button')
-          img.emoticon(src='/img/dancing.png',onclick='$("#addbox").val( $("#addbox").val() + "(dance)" )')
+          img.emoticon(src='/img/dancing.png',onclick='$("#addbox").val( $("#addbox").val() + "(dance)" ); $("#addbox").focus();')
         button.btn.btnicon.btn-default(type='button')
-          img.emoticon(src='/img/ninja.png',onclick='$("#addbox").val( $("#addbox").val() + "(ninja)" )')
+          img.emoticon(src='/img/ninja.png',onclick='$("#addbox").val( $("#addbox").val() + "(ninja)" ); $("#addbox").focus();')
         div.form-group
           label.sr-only(for="addbox")
           input#addbox.form-control(type='string',placeholder="Enter new comment here") 

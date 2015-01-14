@@ -14,6 +14,7 @@ var user = null;
 var V = 26;
 var H = 15;
 var S = 22;
+var pauseDrawing=false;
 
 if(match) {
   dbname = match[1];
@@ -215,7 +216,11 @@ var drawChat = function() {
       $('#annotations').html(html);
       $("#chatthing").draggable();
       $( ".annotation" ).draggable({
+        start: function(event, ui) {
+          pauseDrawing = true;
+        },
         stop: function( event, ui ) { 
+          pauseDrawing = false;
           // fetch this id from the DB
           console.log("id",event.target.id);
           var id = event.target.id;
@@ -223,9 +228,11 @@ var drawChat = function() {
   /*          console.log("got doc", err, doc);
             console.log("postion", ui.position); 
             console.log("offset", ui.offset); */
+            pauseDrawing = false;
             var target = $('#target');
             var top = ui.offset.top - target.offset().top;
             var left = ui.offset.left;
+            
             //console.log("top",top, "left",left);
             if(top<0 || left < 0 || top > target.height() || left > target.width() ) {
               console.log("OUT OF BOUNDS");
@@ -257,7 +264,7 @@ if(dbname) {
   $(document).ready(function () {
 //    console.log("pos", $('#target').position());
            
-
+    $("body").css("overflow", "hidden");
     
     $.ajax( {
       url: "/auth.json", 
