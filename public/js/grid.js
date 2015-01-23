@@ -179,6 +179,9 @@ var map2 = function(doc) {
 }
 
 var drawChat = function() {
+  if(pauseDrawing) {
+    return;
+  }
   console.log("redraw");
   db.get("grid", function(err, grid) {
     V = grid.V;
@@ -220,7 +223,6 @@ var drawChat = function() {
           pauseDrawing = true;
         },
         stop: function( event, ui ) { 
-          pauseDrawing = false;
           // fetch this id from the DB
           console.log("id",event.target.id);
           var id = event.target.id;
@@ -228,7 +230,6 @@ var drawChat = function() {
   /*          console.log("got doc", err, doc);
             console.log("postion", ui.position); 
             console.log("offset", ui.offset); */
-            pauseDrawing = false;
             var target = $('#target');
             var top = ui.offset.top - target.offset().top;
             var left = ui.offset.left;
@@ -238,12 +239,14 @@ var drawChat = function() {
               console.log("OUT OF BOUNDS");
               db.remove(doc._id, doc._rev, function(err, data) {
                 console.log("PUT", err, data);
+                pauseDrawing = false;
               });
             } else {
               doc.top = top;
               doc.left = left;
               db.put(doc, function(err, data) {
                 console.log("PUT", err, data);
+                pauseDrawing = false;
               });
             }
           
@@ -260,58 +263,89 @@ var drawChat = function() {
   
 }
 
+
+var getCredentials = function(callback) {
+  var creds = new PouchDB("creds");
+  creds.get(dbname, function(err,data) {
+    
+    // no credentials stored locally get from the server
+    if(err) {
+      console.log("no creds stored locally fetching");
+      $.ajax( {
+        url: location.href + "/credentials.json",
+        dataType: "json",
+        success: function(data) {
+          console.log("got", data);
+          creds.put(data, dbname);
+          callback(null, data);
+        }
+      });
+    } else {
+      console.log("fetched creds from local store", data);
+      callback(null, data);
+    }
+  })
+  
+
+}
+
 if(dbname) {
   $(document).ready(function () {
 //    console.log("pos", $('#target').position());
            
     $("body").css("overflow", "hidden");
     
-    $.ajax( {
-      url: "/auth.json", 
-      dataType: "json",
-      success: function(data) {
-        auth = data;
-        db = new PouchDB("grid_"+dbname);
-        user = data.user;
-        console.log("USER",user);
-        var url = auth.cloudanturl + "/grid_" + dbname;
-        console.log("syncing to", url);
-        db.sync(url, {live: true})
-        .on('change', function (info) {
-           // handle change
-//          console.log("SYNC change",info);
+    getCredentials(function(err, data) {
+      auth = data;
+      
+      $.ajax( {
+        url: "/user.json", 
+        dataType: "json",
+        success: function(data) {
+          db = new PouchDB("grid_"+dbname);
+          user = data;
+          console.log("USER",user);
+          var url = auth.cloudanturl + "/grid_" + dbname;
+          console.log("syncing to", url);
+          db.sync(url, {live: true})
+          .on('change', function (info) {
+             // handle change
+  //          console.log("SYNC change",info);
           
-         }).on('uptodate', function (info) {
-           // handle up-to-date
-           //console.log("SYNC uptodate",info);
-           var h = $('#target').height() - $('#calibration').height() - 40;
-           $('#chatthing').height(h);
-           drawChat();
-         }).on('error', function (err) {
-           // handle error
-           //console.log("SYNC error",err);
-         });
+           }).on('uptodate', function (info) {
+             // handle up-to-date
+             //console.log("SYNC uptodate",info);
+             var h = $('#target').height() - $('#calibration').height() - 40;
+             $('#chatthing').height(h);
+             drawChat();
+           }).on('error', function (err) {
+             // handle error
+             //console.log("SYNC error",err);
+           });
        
        
        
-         db.get("grid", function(err, grid) {
-           if(!err) {
-             S=grid.S;
-             H=grid.H;
-             V=grid.V;
-           }
-           $('#sslider').slider({ min:8, max:40,value:S, change: function() { 
-             recalibrateGrid();
-           }});
-           $('#hslider').slider({ min:8, max:40,value:H, change: function() { 
-             recalibrateGrid();
-           }});
-           $('#vslider').slider({ min:8, max:40,value:V, change: function() { 
-             recalibrateGrid();
-           }});
-         });
+           db.get("grid", function(err, grid) {
+             if(!err) {
+               S=grid.S;
+               H=grid.H;
+               V=grid.V;
+             }
+             $('#sslider').slider({ min:8, max:40,value:S, change: function() { 
+               recalibrateGrid();
+             }});
+             $('#hslider').slider({ min:8, max:40,value:H, change: function() { 
+               recalibrateGrid();
+             }});
+             $('#vslider').slider({ min:8, max:40,value:V, change: function() { 
+               recalibrateGrid();
+             }});
+           });
        
-       }});
+         }});
+    });
+    
+
 
 
   });

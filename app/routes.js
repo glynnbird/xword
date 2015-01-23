@@ -1,51 +1,11 @@
-// sign up a new user (uniquely identified by mobile or email)
-// creating a new database and assigning an api key & password for access to it
-/*var signUp = function(mobile, email, appname, callback) {
-  
-  // create a hash of the mobile or the email
-  var crypto = require('crypto'),
-    shasum = crypto.createHash('sha1');
-  if(mobile && mobile.length>0) {
-    shasum.update(mobile);
-  } else {
-    shasum.update(email);
-  }
-  
-  // formulate a database name
-  var dbname = appname.replace(/[^A-Za-z0-9]/g,'').toLowerCase() + "_" + shasum.digest('hex');
-  
-  // create a new database
-  cloudant.db.create(dbname, function(err, body) {
-
-    // create an api key
-    cloudant.generate_api_key(function(er, api) {
-      if (er) {
-        return callback(err, null);
-      }
-      
-      // set the permissions of that key
-      cloudant.set_permissions({database:dbname, username:api.key, roles:['_reader','_writer']}, function(er, result) {
-        if (er) {
-          return callback(err, null);
-        }
-        
-        // return the api key, database name and hostname
-        api.db = dbname;
-        var parsed = url.parse(cloudant.config.url);
-        api.host = parsed.host
-        callback(null, api);
-
-      })
-    });
-  });
-};*/
-
 
 var cloudanturl = require('../lib/dburl.js'),
   attachment = require('../lib/attachment.js'),
   cloudant = require('../lib/db.js'),
   gridlog = require('../lib/gridlog.js'),
-  moment = require('moment');
+  moment = require('moment'),
+  url = require('url');
+
 
 module.exports = function(app, passport) {
 
@@ -99,18 +59,36 @@ module.exports = function(app, passport) {
 
   })
   
-  app.get('/auth.json', function(req, res) {
-    var obj = {
-      cloudanturl: cloudanturl,
-      user: req.user
-    };
-    if(obj.user) {
-      res.send(obj);
+  app.get('/user.json', function(req, res) {
+    if(req.user) {
+      res.send(req.user);
     } else {
       res.status(403).send({});
     }
   });
 
+
+  app.get('/grid/:id/credentials.json', function(req, res) {
+     
+    if(req.user) {
+      cloudant.generate_api_key(function(er, api) {
+        if (er)
+          throw er; 
+        
+        var dbname = "grid_"+req.params.id;
+        cloudant.set_permissions({database:dbname, username:api.key, roles:['_reader','_writer']}, function(er, result) {
+          if (er)
+            throw er;
+          var p = url.parse(cloudanturl);
+          api.cloudanturl = "https://"+api.key+":"+api.password+"@"+p.hostname;
+          res.send(api);
+        });
+          
+      });
+    } else {
+      res.status(403).send({});
+    }
+  });
 
   // fetch a grid
   app.get('/grid/:id', function(req,res) {
