@@ -61,26 +61,34 @@ var dismissCalibrate = function() {
   $('#chatthing').height(h);
 }
 
+var getSortOrder = function(callback) {
+  var offset = 1422975651; // the unix timestamp when I came up with this
+  db.info(function(err, data) {
+    callback(null, offset + data.doc_count);
+  });
+};
 
 var addComment = function() {
   if($('#addbox').val().length > 0 ) {
-    var obj = {
-      type: "chat",
-      ts: moment().unix(),
-      person: user.displayName,
-      img: user.photos[0].value,
-      message: $('#addbox').val()
-    };
-    console.log("OBJECT TO ADD",obj)
-    var html = $('#chat').html();;
-    html += render(obj);
-    $('#chat').html(html);
-    $('#chatthing').scrollTop(1E10);
-    $('#addbox').val('');
-    db.post(obj, function(err, data) {
-      console.log("post", err, data,obj);
+    getSortOrder(function(err, sortorder) {
+      var obj = {
+        type: "chat",
+        ts: moment().unix(),
+        sortorder: sortorder,
+        person: user.displayName,
+        img: user.photos[0].value,
+        message: $('#addbox').val()
+      };
+      console.log("OBJECT TO ADD",obj)
+      var html = $('#chat').html();;
+      html += render(obj);
+      $('#chat').html(html);
+      $('#chatthing').scrollTop(1E10);
+      $('#addbox').val('');
+      db.post(obj, function(err, data) {
+        console.log("post", err, data,obj);
+      });
     });
-
   }
 }
 
@@ -89,28 +97,32 @@ var addAnnotation = function() {
     txt = $('#annotationtxt').val()
   
   if(txt.length > 0) {
-    var obj = {
-      type: "annotation",
-      ts: moment().unix(),
-      person: user.displayName,
-      img: user.photos[0].value,
-      message: txt,
-      direction: direction,
-      top: 50,
-      left: 50
-    };
-    var html = $('#chat').html();;
-    html += render(obj);
-    $('#chat').html(html);
-    $('#chatthing').scrollTop(1E10);
-    $('#annotationtxt').val('')
-    db.post(obj, function(err, data) {
-      console.log("post", err, data,obj);
-      obj._id = data.id;
-      obj._rev = data.rev;
-      var h = renderAnnotation(obj);
-      var html = $('#annotations').html();
-      $('#annotations').html(html + h);
+    getSortOrder(function(err, sortorder) {
+    
+      var obj = {
+        type: "annotation",
+        ts: moment().unix(),
+        sortorder: sortorder,
+        person: user.displayName,
+        img: user.photos[0].value,
+        message: txt,
+        direction: direction,
+        top: 50,
+        left: 50
+      };
+      var html = $('#chat').html();;
+      html += render(obj);
+      $('#chat').html(html);
+      $('#chatthing').scrollTop(1E10);
+      $('#annotationtxt').val('')
+      db.post(obj, function(err, data) {
+        console.log("post", err, data,obj);
+        obj._id = data.id;
+        obj._rev = data.rev;
+        var h = renderAnnotation(obj);
+        var html = $('#annotations').html();
+        $('#annotations').html(html + h);
+      });
     });
   }
 
@@ -118,6 +130,9 @@ var addAnnotation = function() {
 }
 
 var render = function(doc) {
+  if(doc.hidden && doc.hidden == true) {
+    return "";
+  }
   var html = '<li class="left clearfix"><span class="chat-img pull-left">';
   html += '<img src="' + doc.img + '" alt="User Avatar" class="img-circle" />';
   html += '</span><div class="chat-body clearfix"><div class="header">';
@@ -142,6 +157,9 @@ var render = function(doc) {
 
 var renderAnnotation = function(doc) {
   var c="";
+  if(doc.hidden && doc.hidden == true) {
+    return "";
+  }
   if(doc.direction=="down") {
     c = "vertical"
   }
@@ -168,7 +186,11 @@ var renderAnnotation = function(doc) {
 }
 var map1 = function(doc) {
   if(doc.type && doc.ts) {
-    emit(doc.ts, null);
+    if(doc.sortorder) {
+      emit(doc.sortorder, null);
+    } else {
+      emit(doc.ts, null);
+    }
   }
 }
 
@@ -237,8 +259,9 @@ var drawChat = function() {
             //console.log("top",top, "left",left);
             if(top<0 || left < 0 || top > target.height() || left > target.width() ) {
               console.log("OUT OF BOUNDS");
-              db.remove(doc._id, doc._rev, function(err, data) {
-                console.log("PUT", err, data);
+              doc.hidden = true;
+              db.put(doc, function(err, data) {
+                console.log("REMOVE ANNOTATION", err, data);
                 pauseDrawing = false;
               });
             } else {
