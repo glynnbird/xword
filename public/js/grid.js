@@ -307,7 +307,7 @@ if(dbname) {
           console.log("USER",user);
           var url = auth.cloudanturl + "/grid_" + dbname;
           console.log("syncing to", url);
-          db.sync(url, {live: true})
+          db.sync(url, {live: true, retry: true})
           .on('change', function (info) {
              // handle change
   //          console.log("SYNC change",info);
